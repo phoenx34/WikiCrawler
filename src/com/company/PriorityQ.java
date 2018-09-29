@@ -38,7 +38,7 @@ public class PriorityQ {
 
     public PriorityQ() {
         data = new Data[255];
-        data[0] = new Data(0, "");
+        data[0] = null;
         n = 0;
     }
 
@@ -66,7 +66,20 @@ public class PriorityQ {
         }
     }
 
+    private void heapify_up(int i) {
+        int parent;
 
+        if (i != 1) {
+            parent = (int)Math.floor(i/2);
+
+            if (data[parent].compareTo(data[i]) == 1) {
+                Data temp = data[parent];
+                data[parent] = data[i];
+                data[i] = temp;
+                heapify_up(parent);
+            }
+        }
+    }
 
     public void add(String s, int key) {
         Data d = new Data(key, s);
@@ -75,7 +88,7 @@ public class PriorityQ {
         } else {
             n++;
             data[n] = d;
-            heapify(n, data.length);
+            heapify_up(n);
         }
 //        assert isMaxHeap();
     }
@@ -112,8 +125,8 @@ public class PriorityQ {
 
     public int[] priorityArray() {
         int[] keys = new int[n];
-        for (int i = 1; i < n; i++) {
-            keys[i] = data[i].getKey();
+        for (int i = 0; i < n; i++) {
+            keys[i] = data[i + 1].getKey();
         }
 
         System.out.println(Arrays.toString(keys));
