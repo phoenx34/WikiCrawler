@@ -1,6 +1,8 @@
 package com.company;
 
 
+import java.util.Arrays;
+
 public class PriorityQ {
 
     private class Data implements Comparable<Data>{
@@ -21,12 +23,13 @@ public class PriorityQ {
         }
 
         @Override
+        // Returns 1 if compared data is bigger, 0 if not.
         public int compareTo(Data data) {
             if (data.getKey() >= this.getKey()) {
-                return data.getKey();
+                return 1;
             }
 
-            return this.getKey();
+            return 0;
         }
     }
 
@@ -34,49 +37,86 @@ public class PriorityQ {
     private Data[] data;
 
     public PriorityQ() {
-        data = new Data[32];
+        data = new Data[255];
         data[0] = new Data(0, "");
         n = 0;
     }
 
-    public void add(Data d) {
+    // Recursive method to heapify subtree with root = i, and length = 255 or max specified on construction
+    public void heapify(int i, int length) {
 
-        Data temp = new Data(0, "");
+        int max = i;
+        int left_child = 2 * i + 1;
+        int right_child = 2 * i + 2;
 
-        if (n > 1) {
-            int kval = d.compareTo(data[n]);
-            if (kval == d.key) {
-                temp = data[n];
-                data[n] = d;
-                data[n + 1] = temp;
-            } else {
-
-            }
-
+        if (left_child < length && data[right_child].compareTo(data[left_child]) == 1) {
+                max = left_child;
         }
-//        heapify(data);
-//        assert isMaxHeap();
 
+        if (right_child < length && data[right_child].compareTo(data[left_child]) == 0) {
+            max = right_child;
+        }
+
+        if (max != i) {
+            Data swap = data[i];
+            data[i] = data[max];
+            data[max] = swap;
+
+            heapify(max, length);
+        }
+    }
+
+
+
+    public void add(String s, int key) {
+        Data d = new Data(key, s);
+        if (n == data.length) {
+            throw new IndexOutOfBoundsException("Heap's underlying storage is overflow");
+        } else {
+            n++;
+            data[n] = d;
+            heapify(n, data.length);
+        }
+//        assert isMaxHeap();
     }
 
     public String returnMax() {
-        return null;
+        return data[1].getValue();
     }
 
     public String extractMax() {
-        return null;
+        if (n <= 0)
+            throw new ArrayIndexOutOfBoundsException("Queue is empty");
+        if(n == 1)
+            return data[1].getValue();
+
+        Data root = data[1];
+        data[1] = data[n];
+        n--;
+        heapify(1, n);
+        return root.getValue();
     }
 
     public void remove(int i) {
-
+        Data remove = data[i];
+        data[i] = data[n];
+        n--;
+        heapify(i, n);
     }
 
     public void decrementPriority(int i, int o) {
-
+        Data d_curr = data[i];
+        d_curr.key = d_curr.key - o;
+        data[i] = d_curr;
     }
 
     public int[] priorityArray() {
-        return null;
+        int[] keys = new int[n];
+        for (int i = 1; i < n; i++) {
+            keys[i] = data[i].getKey();
+        }
 
+        System.out.println(Arrays.toString(keys));
+        return keys;
     }
 }
