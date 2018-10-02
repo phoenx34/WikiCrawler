@@ -30,6 +30,15 @@ public class wikiCrawler {
     * - Order of links must be same order as appearing in html document
     */
     public ArrayList<String> extractLinks(String document) {
+
+        ArrayList<String> list = new ArrayList<>();
+
+        //regex: (?!.*[#:.]).*(\/wiki\/).*\n
+
+        // The above regex works for strings with each url on a separate line.
+        // It does not take into account the <p> constraint
+        // And it will fail to pick up multiple urls contained on the same line.
+        // I don't know how to improve it.
         return null;
     }
 
