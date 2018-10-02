@@ -21,5 +21,9 @@ public class Main {
         q.remove(2);
         q.priorityArray();
 
+        System.out.println(q.returnMax());
+        q.extractMax();
+        q.priorityArray();
+
     }
 }
