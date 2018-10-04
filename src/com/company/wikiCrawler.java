@@ -1,6 +1,8 @@
 package com.company;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class wikiCrawler {
 
@@ -32,13 +34,21 @@ public class wikiCrawler {
     public ArrayList<String> extractLinks(String document) {
 
         ArrayList<String> list = new ArrayList<>();
+        // (\/wiki\/).+?(?=") is correct regex.
+        // Changed to below due to Java's stupid escape rule
 
-        //regex: (?!.*[#:.]).*(\/wiki\/).*\n
+        // We need to split the string so we can
+        // search only the part after the first <p> or <P>
+        // Do this without strings, too slow.
+        String b[] = document.split("(?i)<p>", 2);
+        String toScan = b[1];
 
-        // The above regex works for strings with each url on a separate line.
-        // It does not take into account the <p> constraint
-        // And it will fail to pick up multiple urls contained on the same line.
-        // I don't know how to improve it.
+
+
+        Pattern p = Pattern.compile("\\(\\/wiki\\/\\).+?\\(?=\"\\)");
+        Matcher m = p.matcher(document);
+
+
         return null;
     }
 
