@@ -1,6 +1,7 @@
 package com.company;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,16 +41,21 @@ public class wikiCrawler {
         // We need to split the string so we can
         // search only the part after the first <p> or <P>
         // Do this without strings, too slow.
-        String b[] = document.split("(?i)<p>", 2);
+
+        /*String b[] = document.split("(?i)<p>", 2);
         String toScan = b[1];
-
-
+        */
+        String toScan;
+        StringTokenizer tokenScan = new StringTokenizer(document);
+        toScan = tokenScan.nextToken("(?i)<p>");
+        toScan = tokenScan.nextToken("");
 
         Pattern p = Pattern.compile("\\(\\/wiki\\/\\).+?\\(?=\"\\)");
-        Matcher m = p.matcher(document);
+        Matcher m = p.matcher(toScan);
 
-
-        return null;
+        while (m.find())
+            list.add(m.group(0));
+        return list;
     }
 
     /*
