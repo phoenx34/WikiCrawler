@@ -161,9 +161,9 @@ public class PriorityQ {
 	
 	/**
 	 * Checks if the heap is empty
-	 * @return true is empty, else false
+	 * @return true if empty, else false
 	 */
-	private boolean isEmpty() {
+	public boolean isEmpty() {
 		return n == 0;
 	}
 }
