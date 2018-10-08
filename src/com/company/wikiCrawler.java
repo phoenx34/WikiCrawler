@@ -2,7 +2,10 @@ package com.company;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -12,6 +15,7 @@ import java.util.ArrayList;
  * @author Jose Lopez
  */
 public class wikiCrawler {
+	static final String BASE_URL = "http://web.cs.iastate.edu/~pavan";// "https://en.wikipedia.org";
 
 	/**
 	 * related address of seed URL (within wiki domain)
@@ -42,12 +46,29 @@ public class wikiCrawler {
 	 * @param topics array of strings representing keywords in a topic-list
 	 * @param output string representing the filename where the web graph over
 	 *               discovered pages are written
+	 * @throws IOException
 	 */
 	public wikiCrawler(String seed, int max, String[] topics, String output) {
 		this.seed = seed;
 		this.output = output;
 		this.max = max;
 		this.topics = topics;
+	}
+
+	public String getDoc() throws IOException {
+
+		URL url= new URL(BASE_URL + seed);
+		InputStream is = url.openStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+		StringBuffer html = new StringBuffer();
+
+		String temp;
+		while ((temp = br.readLine()) != null) {
+			html.append(temp);
+		}
+
+		return html.toString();
 	}
 
 	/**
@@ -84,13 +105,13 @@ public class wikiCrawler {
 				int end = line.indexOf("\" ");
 
 				String link = line.substring(0, end);
-				
+
 				if (!(link.contains("#") || link.contains(":"))) {
 					list.add(link);
 				}
-				
+
 				line = line.substring(line.indexOf("</a>"));
-			} while (line != null && !line.toLowerCase().contains("</p>"));
+			} while (line != null);
 
 			System.out.println(list);
 

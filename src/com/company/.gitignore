@@ -1,1 +1,5 @@
 /wikiCrawler.class
+/Node.class
+/PriorityComparator.class
+/PriorityQTest.class
+/WikiCrawlerTest.class
