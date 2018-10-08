@@ -54,7 +54,14 @@ public class wikiCrawler {
 		this.max = max;
 		this.topics = topics;
 	}
-
+	
+	/**
+	 * This uses the seed to go to the page source and turns it into a string
+	 * 
+	 * @return
+	 * 	source file as a string
+	 * @throws IOException
+	 */
 	public String getDoc() throws IOException {
 
 		URL url= new URL(BASE_URL + seed);
