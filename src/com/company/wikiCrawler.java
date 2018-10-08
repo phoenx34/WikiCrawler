@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Crawls Wiki pages and constructs a web graph of 200 pages
@@ -67,23 +66,35 @@ public class wikiCrawler {
 	 */
 	public ArrayList<String> extractLinks(String document) {
 		ArrayList<String> list = new ArrayList<String>();
-//		  list.ensureCapacity(document.length());
 		BufferedReader br = new BufferedReader(new StringReader(document));
-		
+
 		try {
 			String line = br.readLine();
 
-			while (!line.isEmpty()) {
-				String regex = "(\\/wiki\\/)(.*?)(?=\\\")";
-				if (line.contains("<p>") || line.contains("<P>")) {
-					String[] link = line.split(regex);
-//					String test = Arrays.toString(link).replace(", ", regex.toCharArray())
-					System.out.println(link[0] + link[1]);
+			while (!line.toLowerCase().contains("<p>"))
+				line = br.readLine();
+
+			do {
+				if (!line.contains("/wiki/")) {
+					line = br.readLine();
+					continue;
 				}
-			}
+
+				line = line.substring(line.indexOf("/wiki/"));
+				int end = line.indexOf("\" ");
+
+				String link = line.substring(0, end);
+				
+				if (!(link.contains("#") || link.contains(":"))) {
+					list.add(link);
+				}
+				
+				line = line.substring(line.indexOf("</a>"));
+			} while (line != null && !line.toLowerCase().contains("</p>"));
+
+			System.out.println(list);
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			System.out.println("Shits broke Yo");
 		}
 
