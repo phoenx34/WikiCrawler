@@ -145,20 +145,20 @@ public class PriorityQ {
 		System.out.println(Arrays.toString(keys));
 		return keys;
 	}
-	
+
 	public int getKey(int index) {
 		return data[index].getKey();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param index
 	 * @return
 	 */
 	public String getValue(int index) {
 		return data[index].getValue();
 	}
-	
+
 	/**
 	 * Checks if the heap is empty
 	 * @return true if empty, else false

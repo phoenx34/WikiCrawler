@@ -12,11 +12,12 @@ import java.util.List;
 
 /**
  * Crawls Wiki pages and constructs a web graph of 200 pages
- * 
+ *
  * @author Marc Isaac
  * @author Jose Lopez
  */
 public class wikiCrawler {
+
 	static final String BASE_URL = "http://web.cs.iastate.edu/~pavan";// "https://en.wikipedia.org";
 
 	/**
@@ -42,7 +43,7 @@ public class wikiCrawler {
 
 	/**
 	 * Constructs a default WikiCrawler
-	 * 
+	 *
 	 * @param seed   related address of seed URL (within wiki domain)
 	 * @param max    maximum number of pages to consider
 	 * @param topics array of strings representing keywords in a topic-list
@@ -59,7 +60,7 @@ public class wikiCrawler {
 
 	/**
 	 * This uses the seed to go to the page source and turns it into a string
-	 * 
+	 *
 	 * @return source file as a string
 	 * @throws IOException
 	 */
@@ -92,7 +93,7 @@ public class wikiCrawler {
 	 * <P>
 	 * - Do not extract links containing characters like '#' or ':' - Order of links
 	 * must be same order as appearing in html document
-	 * 
+	 *
 	 * @param document an entire HTML document
 	 * @return a list of strings consisting of links from the document
 	 */
@@ -124,7 +125,7 @@ public class wikiCrawler {
 				line = line.substring(line.indexOf("</a>"));
 			} while (line != null);
 
-//			System.out.println(list);
+			System.out.println(list);
 
 		} catch (IOException e) {
 			System.out.println("Shits broke Yo");
@@ -133,7 +134,7 @@ public class wikiCrawler {
 		/*
 		 * int q = document.indexOf(delimiter); int end =
 		 * document.indexOf("(\\/wiki\\/).+?(?=\\\")", q + 10);
-		 * 
+		 *
 		 * while (j >= 0) { list[count] = document.substring(end + 6, ); }
 		 */
 		return list;
@@ -149,7 +150,7 @@ public class wikiCrawler {
 	 * priority = relevancy. ExtractMax from queue until complete
 	 *
 	 * - After crawl, edges that were explored are written to output file
-	 * 
+	 *
 	 * @param focused if false then explore in a BFS fashion. If true then for every
 	 *                page a, compute the Relevance(T,a)
 	 */
@@ -170,14 +171,14 @@ public class wikiCrawler {
 					x = getDoc(linkTemp);
 
 					ArrayList<String> temp = extractLinks(x);
-					
+
 //					String[] extractedLinks = temp.toArray(new String[temp.size()]);
 
 					Iterator<String> index = temp.iterator();
-					while(index.hasNext()) {
-						
+					while (index.hasNext()) {
+
 						String word = index.next();
-						
+
 						if (!discovered.contains(word)) {
 							queue.add(temp.get(i));
 							discovered.add(temp.get(i));
@@ -193,17 +194,78 @@ public class wikiCrawler {
 				}
 			}
 			System.out.println(discovered);
+		} else {
+			// Gets starting group of links
+			ArrayList<String> links = extractLinks(seed);
+			// New priority queue to push relevancy and links
+			PriorityQ queue = new PriorityQ();
+
+			int j = 0;
+			int relevance;
+
+			// Adds relevance for starting link.
+			// Not sure if this is necessary.
+			relevance = getRelevance(seed);
+			queue.add(seed, relevance);
+
+			// Calculates relevancy of each respective page in links array list
+			// Then populates a queue with each relevancy and url
+			// and removes said link from the arraylist.
+			// Stops when arraylist is empty.
+			while (!links.isEmpty()) {
+				relevance = getRelevance(links.get(j));
+				queue.add(links.get(j), relevance);
+				links.remove(j);
+				j++;
+			}
+
+			while (!queue.isEmpty()) {
+				// Need to write each string to the output txt file.
+				// Also need max (amount of links traversed)
+				// as the first line of the output file.
+				// Maybe we can take this loop out of the if else
+				// statement and use it for both focused and !focused.
+				String writeOut = queue.extractMax();
+
+			}
+
 		}
 	}
 
-	private ArrayList<String> queue() {
-		ArrayList<String> q = extractLinks(seed);
-		ArrayList<String> queue = new ArrayList<>();
-		int i = 0;
-		while (!q.isEmpty()) {
-			queue.add(q.remove(0));
+	/**
+	 * Calculates the number of times a particular topic appears in the document
+	 *
+	 * @param topic topic to be counted
+	 * @param links links to be searched against topic
+	 * @return count of times topic appears in links
+	 */
+	private static int countTopic(String topic, String links) {
+		int count = 0;
+		for (int i = links.indexOf(topic); i >= 0; i = links.indexOf(topic, i + topic.length())) {
+			count++;
 		}
 
-		return queue;
+		return count;
+	}
+
+	/**
+	 * Calculates relevancy of a specific webpage based upon keywords in String
+	 * Topics[]
+	 *
+	 * @param webpage a string containing the webpage's html.
+	 */
+	private int getRelevance(String webpage) {
+		ArrayList<String> q = extractLinks(webpage);
+
+		String temp = q.toString();
+		int count = 0;
+		for (int i = 0; i < topics.length; i++) {
+			if (!temp.contains(topics[i])) {
+				return 0;
+			}
+			count += countTopic(topics[i], temp);
+		}
+
+		return count;
 	}
 }
