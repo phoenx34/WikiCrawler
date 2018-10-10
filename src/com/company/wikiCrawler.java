@@ -158,6 +158,41 @@ public class wikiCrawler {
                 x = queue[i];
 
             }
+        } else {
+            // Gets starting group of links
+            ArrayList<String> links = extractLinks(seed);
+            // New priority queue to push relevancy and links
+            PriorityQ queue = new PriorityQ();
+
+            int j = 0;
+            int relevance;
+
+            // Adds relevance for starting link.
+            // Not sure if this is necessary.
+            relevance = getRelevance(seed);
+            queue.add(seed, relevance);
+
+            // Calculates relevancy of each respective page in links array list
+            // Then populates a queue with each relevancy and url
+            // and removes said link from the arraylist.
+            // Stops when arraylist is empty.
+            while (!links.isEmpty()) {
+                relevance = getRelevance(links.get(j));
+                queue.add(links.get(j), relevance);
+                links.remove(j);
+                j++;
+            }
+
+            while (!queue.isEmpty()) {
+                // Need to write each string to the output txt file.
+                // Also need max (amount of links traversed)
+                // as the first line of the output file.
+                // Maybe we can take this loop out of the if else
+                // statement and use it for both focused and !focused.
+                String writeOut = queue.extractMax();
+
+            }
+
         }
     }
 
@@ -185,7 +220,6 @@ public class wikiCrawler {
      */
     private int getRelevance(String webpage) {
         ArrayList<String> q = extractLinks(webpage);
-        PriorityQ queue = new PriorityQ();
 
         String temp = q.toString();
         int count = 0;
@@ -196,7 +230,6 @@ public class wikiCrawler {
             count += countTopic(topics[i], temp);
         }
 
-        queue.add(webpage, count);
 
         return count;
     }
