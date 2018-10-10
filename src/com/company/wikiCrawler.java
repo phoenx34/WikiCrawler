@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Crawls Wiki pages and constructs a web graph of 200 pages
@@ -54,17 +56,19 @@ public class wikiCrawler {
 		this.max = max;
 		this.topics = topics;
 	}
-	
+
 	/**
 	 * This uses the seed to go to the page source and turns it into a string
 	 * 
-	 * @return
-	 * 	source file as a string
+	 * @return source file as a string
 	 * @throws IOException
 	 */
-	public String getDoc() throws IOException {
+	public String getDoc(String u) throws IOException {
 
-		URL url= new URL(BASE_URL + seed);
+		if (u == null)
+			u = seed;
+
+		URL url = new URL(BASE_URL + u);
 		InputStream is = url.openStream();
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
@@ -120,7 +124,7 @@ public class wikiCrawler {
 				line = line.substring(line.indexOf("</a>"));
 			} while (line != null);
 
-			System.out.println(list);
+//			System.out.println(list);
 
 		} catch (IOException e) {
 			System.out.println("Shits broke Yo");
@@ -151,26 +155,53 @@ public class wikiCrawler {
 	 */
 	public void crawl(boolean focused) {
 		if (!focused) {
-			String[] queue = queue();
-			boolean discovered[] = new boolean[200];
+			ArrayList<String> queue = new ArrayList<>();
+			List<String> discovered = new ArrayList<>();
 
-			queue[0] = seed;
-			discovered[0] = true;
-			String x;
+			queue.add(seed);
+			discovered.add(seed);
 			int i = 0;
-			while (queue[i] != null) {
-				x = queue[i];
+			String x;
+			int count = 0;
+			while (!queue.isEmpty()) {
+				try {
+					String linkTemp = queue.remove(i);
 
+					x = getDoc(linkTemp);
+
+					ArrayList<String> temp = extractLinks(x);
+					
+//					String[] extractedLinks = temp.toArray(new String[temp.size()]);
+
+					Iterator<String> index = temp.iterator();
+					while(index.hasNext()) {
+						
+						String word = index.next();
+						
+						if (!discovered.contains(word)) {
+							queue.add(temp.get(i));
+							discovered.add(temp.get(i));
+//							count++;
+						}
+						i++;
+//						index.remove();
+					}
+					i = 0;
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
+			System.out.println(discovered);
 		}
 	}
 
-	private String[] queue() {
+	private ArrayList<String> queue() {
 		ArrayList<String> q = extractLinks(seed);
-		String[] queue = new String[200];
+		ArrayList<String> queue = new ArrayList<>();
 		int i = 0;
 		while (!q.isEmpty()) {
-			queue[i++] = q.remove(0);
+			queue.add(q.remove(0));
 		}
 
 		return queue;
