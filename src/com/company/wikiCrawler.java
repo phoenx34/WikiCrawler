@@ -119,7 +119,7 @@ public class wikiCrawler {
             System.out.println(list);
 
         } catch (IOException e) {
-            System.out.println("Shits broke Yo");
+            System.out.println("Extracting links failed.");
         }
 
         /*
@@ -182,22 +182,33 @@ public class wikiCrawler {
                 links.remove(j);
                 j++;
             }
-
-            while (!queue.isEmpty()) {
-                // Need to write each string to the output txt file.
-                // Also need max (amount of links traversed)
-                // as the first line of the output file.
-                // Maybe we can take this loop out of the if else
-                // statement and use it for both focused and !focused.
-                String writeOut = queue.extractMax();
-
-            }
-
         }
     }
 
     /**
-     * Calculates the number of times a particular topic appears in the document
+     * Takes a PriorityQ which is given from wikicrawler
+     * when focused = queue and writes the data into an
+     * output txt file located in the project directory.
+     *
+     * @param queue PriorityQ to be written
+     */
+    public void writeOutput(PriorityQ queue) {
+        try (PrintWriter out = new PrintWriter("filename.txt")) {
+            // I think this will print out the total number of pages traversed.
+            // I might be wrong, this could be the max pages traversed
+            // but not the actual number of pages traversed.
+            out.println(max);
+            while (!queue.isEmpty()) {
+                out.println(queue.extractMax());
+            }
+        } catch (IOException e) {
+            System.out.println("Writing output failed.");
+        }
+    }
+
+    /**
+     * Calculates the number of times a particular topic
+     * appears in the document
      *
      * @param topic topic to be counted
      * @param links links to be searched against topic
@@ -229,7 +240,6 @@ public class wikiCrawler {
             }
             count += countTopic(topics[i], temp);
         }
-
 
         return count;
     }
