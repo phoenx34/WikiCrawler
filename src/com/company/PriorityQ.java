@@ -118,7 +118,7 @@ public class PriorityQ {
 		if (isEmpty())
 			throw new ArrayIndexOutOfBoundsException("Queue is empty");
 
-		Data remove = data[i];
+//		Data remove = data[i];
 		data[i] = data[n];
 		n--;
 		heapify(i, n);
